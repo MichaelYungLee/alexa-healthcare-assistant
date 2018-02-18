@@ -52,7 +52,10 @@ const user = {
 }
 
 const cities = {
-    "Stanford": {},
+    "Stanford": {
+    	"therapists": [
+    	]
+    },
     "Los Angeles": {
         "therapists": [
             {
@@ -81,10 +84,28 @@ const cities = {
             }
         ]
     },
-    "San Diego": {},
-    "San Francisco": {},
-    "Sacramento": {},
-    "Fresno": {},
+    "San Diego": {
+    	"therapists": [
+    	]
+    },
+    "San Francisco": {
+    	"therapists": [
+    	{
+    			"name": "Jordan",
+    			"rating": 3.6,
+    			"calendar": "healthcare.assistant.patient@gmail.com",
+    			"address": "temp address"
+    		}
+    	]
+    },
+    "Sacramento": {
+    	"therapists": [
+    	]
+    },
+    "Fresno": {
+    	"therapists": [
+    	]
+    },
 }
 
 const handlers = {
@@ -95,7 +116,7 @@ const handlers = {
     },
 
     'AboutIntent': function () {
-        this.response.speak(this.t('ABOUT'));
+        this.response.speak(this.t('ABOUT')).listen("What can I help you with?");
         this.emit(':responseReady');
     },
     'ScheduleIntent': function() {
@@ -108,16 +129,32 @@ const handlers = {
         var speechOutput = "";
         if (cities.hasOwnProperty(searchCity)) {
             var numberOfTherapists = cities[searchCity]["therapists"].length;
-            var bestTherapists = removeUnderratedTherapists(searchCity);
-            speechOutput += ("I found " + numberOfTherapists + " therapists in " + searchCity + ". The top-rated therapists are ");
-            for (var i = 0; i < bestTherapists.length; i++) {
-                speechOutput += (bestTherapists[i].name + " with a " + bestTherapists[i].rating + "rating, ");
-            }
-            speechOutput += ". Which therapist would you like to schedule with?";
+            if (numberOfTherapists > 0) {
+           		var bestTherapists = removeUnderratedTherapists(searchCity);
+            	speechOutput += ("I found " + numberOfTherapists + " therapists in " + searchCity + ". ");
+            	if (bestTherapists.length > 0) {
+            		speechOutput += "The top-rated therapists are ";
+            		for (var i = 0; i < bestTherapists.length; i++) {
+                		speechOutput += (bestTherapists[i].name + " with a " + bestTherapists[i].rating + "rating, ");
+            		}
+            	}
+            	else {
+            		speechOutput += "They are ";
+            		for (var i = 0; i < numberOfTherapists; i++)
+            			speechOutput += (cities[searchCity]["therapists"][i].name + ", ");
+            	}
+           		speechOutput += ". Which therapist would you like to schedule with?";
+            	this.response.speak(speechOutput).listen("Which therapist would you like to schedule with?");
+        	}
+        	else {
+        		speechOutput += "Sorry, I did not find any therapists in " + searchCity;
+            	this.response.speak(speechOutput).listen("Is there another city you would like to search?");
+        	}
         }
-        else 
-            speechOutput += ("Sorry, I did not find any therapists in " + searchCity);
-        this.response.speak(speechOutput).listen("Which therapist would you like to schedule with?");
+        else {
+            speechOutput += "Sorry, I could not locate that " + searchCity;
+            this.response.speak(speechOutput).listen("Is there another city you would like to search?");
+        }
         this.emit(":responseReady");
     },
     'TherapistIntent': function() {
