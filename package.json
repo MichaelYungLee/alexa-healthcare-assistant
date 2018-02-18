@@ -1,0 +1,12 @@
+{
+  "name": "alexa-skill-kit-sdk-factskill",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "alexa-sdk": "^1.0.25",
+    "amazon-date-parser": "^0.2.0",
+    "google-auth-library": "^0.12.0",
+    "googleapis": "^25.0.0",
+    "request": "^2.83.0"
+  }
+}
